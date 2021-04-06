@@ -1,42 +1,34 @@
-library ieee;
-use ieee.std_logic_1164.all;
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
 
+PACKAGE sim_data_types IS
 
+    TYPE adst_sim_data_type IS RECORD
+        ip_reg : STD_LOGIC_VECTOR(7 DOWNTO 0);
+    END RECORD;
+    TYPE refi_sim_data_type IS RECORD
+        wr_en : STD_LOGIC;
+        index : STD_LOGIC_VECTOR(1 DOWNTO 0);
 
-package sim_data_types is
+        r0_reg : STD_LOGIC_VECTOR(7 DOWNTO 0);
+        r1_reg : STD_LOGIC_VECTOR(7 DOWNTO 0);
+        r2_reg : STD_LOGIC_VECTOR(7 DOWNTO 0);
+        r3_reg : STD_LOGIC_VECTOR(7 DOWNTO 0);
+    END RECORD;
+    TYPE exst_sim_data_type IS RECORD
+        refi_sim : refi_sim_data_type;
 
-	type adst_sim_data_type is record
-		ip_reg:	std_logic_vector(7 downto 0);
-	end record;
-	
-	
-	type refi_sim_data_type is record
-		wr_en:	std_logic;
-		index:	std_logic_vector(1 downto 0);
-		
-		r0_reg:	std_logic_vector(7 downto 0);
-		r1_reg:	std_logic_vector(7 downto 0);
-		r2_reg:	std_logic_vector(7 downto 0);
-		r3_reg:	std_logic_vector(7 downto 0);
-	end record;
-	
-	
-	type exst_sim_data_type is record
-		refi_sim:			refi_sim_data_type;
-		
-		jmp_state:			std_logic;
-		jmp_link:			std_logic;
-		lda_state:			std_logic;
-		
-		ir_reg:				std_logic_vector(7 downto 0);
-		a_reg_wr:			std_logic;
-		a_reg:				std_logic_vector(7 downto 0);
-	end record;
-	
-	
-	type core_sim_data_type is record
-		adst_sim:	adst_sim_data_type;
-		exst_sim:	exst_sim_data_type;
-	end record;
+        jmp_state : STD_LOGIC;
+        jmp_link : STD_LOGIC;
+        lda_state : STD_LOGIC;
 
-end sim_data_types;
+        ir_reg : STD_LOGIC_VECTOR(7 DOWNTO 0);
+        a_reg_wr : STD_LOGIC;
+        a_reg : STD_LOGIC_VECTOR(7 DOWNTO 0);
+    END RECORD;
+    TYPE core_sim_data_type IS RECORD
+        adst_sim : adst_sim_data_type;
+        exst_sim : exst_sim_data_type;
+    END RECORD;
+
+END sim_data_types;

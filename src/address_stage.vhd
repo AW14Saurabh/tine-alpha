@@ -1,71 +1,65 @@
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+USE ieee.numeric_std.ALL;
 
-library tine_alpha;
-use tine_alpha.address_stage_const.all;
-use tine_alpha.sim_data_types.all;
+LIBRARY tine_alpha;
+USE tine_alpha.address_stage_const.ALL;
+USE tine_alpha.sim_data_types.ALL;
 
+ENTITY address_stage IS
+    GENERIC (
+        sim_en : BOOLEAN := false
+    );
+    PORT (
+        clk : IN STD_LOGIC;
+        rst : IN STD_LOGIC;
+        stall : IN STD_LOGIC;
 
+        jmp_ack : OUT STD_LOGIC;
+        --
+        jmp_en : IN STD_LOGIC;
+        jmp_addr : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
 
-entity address_stage is
-	generic(	sim_en:	boolean := false
-				);
-	port(	clk:			in  std_logic;
-			rst:			in  std_logic;
-			stall:		in  std_logic;
-			
-			jmp_ack:		out  std_logic;
-			--
-			jmp_en:		in  std_logic;
-			jmp_addr:	in  std_logic_vector(7 downto 0);
-			
-			ip_out:		out  std_logic_vector(7 downto 0);
-			--
-			sim:			out  adst_sim_data_type
-			);
-end address_stage;
+        ip_out : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
+        --
+        sim : OUT adst_sim_data_type
+    );
+END address_stage;
 
+ARCHITECTURE behavioral OF address_stage IS
 
+    SIGNAL ip_reg : STD_LOGIC_VECTOR(7 DOWNTO 0);
 
-architecture behavioral of address_stage is
+    SIGNAL sim_sig : adst_sim_data_type;
 
-	signal ip_reg:		std_logic_vector(7 downto 0);
-	
-	signal sim_sig:	adst_sim_data_type;
+BEGIN
 
-begin
+    ip_out <= ip_reg;
+    PROCESS (clk)
+    BEGIN
+        IF (rising_edge(clk)) THEN
+            IF (rst = '1') THEN
 
-	ip_out <= ip_reg;
-	
-	
-	process(clk)
-	begin
-		if (rising_edge(clk)) then
-			if (rst = '1') then
-			
-				ip_reg <= RST_IP_REG;
-			
-			elsif (stall = '0') then
-				
-				jmp_ack <= jmp_en;
-				
-				if (jmp_en = '1') then
-					ip_reg <= jmp_addr;
-				else
-					ip_reg <= std_logic_vector(unsigned(ip_reg) + 1);
-				end if;
-			
-			end if;
-		end if;
-	end process;
-	
+                ip_reg <= RST_IP_REG;
 
-	sim_sig.ip_reg <= ip_reg;
-	
-	sim_switch:
-	if (sim_en = true) generate
-		sim <= sim_sig;
-	end generate sim_switch;
+            ELSIF (stall = '0') THEN
 
-end behavioral;
+                jmp_ack <= jmp_en;
+
+                IF (jmp_en = '1') THEN
+                    ip_reg <= jmp_addr;
+                ELSE
+                    ip_reg <= STD_LOGIC_VECTOR(unsigned(ip_reg) + 1);
+                END IF;
+
+            END IF;
+        END IF;
+    END PROCESS;
+    sim_sig.ip_reg <= ip_reg;
+
+    sim_switch :
+    IF (sim_en = true) GENERATE
+        sim <= sim_sig;
+    END GENERATE sim_switch;
+
+END behavioral;

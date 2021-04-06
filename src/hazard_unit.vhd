@@ -1,51 +1,46 @@
-library ieee;
-use ieee.std_logic_1164.all;
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
 
-library tine_alpha;
-use tine_alpha.address_stage_const.all;
+LIBRARY tine_alpha;
+USE tine_alpha.address_stage_const.ALL;
 
+ENTITY hazard_unit IS
+    PORT (
+        clk : IN STD_LOGIC;
+        rst : IN STD_LOGIC;
+        --
+        skip_ack : IN STD_LOGIC;
+        lda_ack : IN STD_LOGIC;
+        jmp_start : IN STD_LOGIC;
+        jmp_cmplt : IN STD_LOGIC;
 
+        fetch_nop : OUT STD_LOGIC;
+        stall_sig : OUT STD_LOGIC
+    );
+END hazard_unit;
 
-entity hazard_unit is
-	port(	clk:			in  std_logic;
-			rst:			in  std_logic;
-			--
-			skip_ack:	in  std_logic;
-			lda_ack:		in  std_logic;
-			jmp_start:	in  std_logic;
-			jmp_cmplt:	in  std_logic;
-			
-			fetch_nop:	out  std_logic;
-			stall_sig:	out  std_logic
-			);
-end hazard_unit;
+ARCHITECTURE behavioral OF hazard_unit IS
 
+    SIGNAL jmp_state : STD_LOGIC;
 
+BEGIN
 
-architecture behavioral of hazard_unit is
+    fetch_nop <= skip_ack OR lda_ack OR jmp_start OR jmp_state;
 
-	signal jmp_state:		std_logic;
+    stall_sig <= lda_ack;
+    PROCESS (clk)
+    BEGIN
+        IF (rising_edge(clk)) THEN
+            IF (rst = '1') THEN
+                jmp_state <= '0';
+            ELSE
+                IF (jmp_cmplt = '1') THEN
+                    jmp_state <= '0';
+                ELSIF (jmp_start = '1') THEN
+                    jmp_state <= '1';
+                END IF;
+            END IF;
+        END IF;
+    END PROCESS;
 
-begin
-	
-	fetch_nop <= skip_ack or lda_ack or jmp_start or jmp_state;
-
-	stall_sig <= lda_ack;
-	
-	
-	process(clk)
-	begin
-		if (rising_edge(clk)) then
-			if (rst = '1') then
-				jmp_state <= '0';
-			else
-				if (jmp_cmplt = '1') then
-					jmp_state <= '0';
-				elsif (jmp_start = '1') then
-					jmp_state <= '1';
-				end if;
-			end if;
-		end if;
-	end process;
-
-end behavioral;
+END behavioral;

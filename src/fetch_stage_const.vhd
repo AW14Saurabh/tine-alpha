@@ -1,10 +1,8 @@
-library ieee;
-use ieee.std_logic_1164.all;
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
 
+PACKAGE fetch_stage_const IS
 
+    CONSTANT NOP_INST : STD_LOGIC_VECTOR(7 DOWNTO 0) := x"00";
 
-package fetch_stage_const is
-	
-	constant NOP_INST:	std_logic_vector(7 downto 0) := x"00";
-	
-end fetch_stage_const;
+END fetch_stage_const;

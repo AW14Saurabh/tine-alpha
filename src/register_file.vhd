@@ -1,64 +1,58 @@
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+USE ieee.numeric_std.ALL;
 
-library tine_alpha;
-use tine_alpha.sim_data_types.all;
+LIBRARY tine_alpha;
+USE tine_alpha.sim_data_types.ALL;
 
+ENTITY register_file IS
+    GENERIC (
+        sim_en : BOOLEAN := false
+    );
+    PORT (
+        clk : IN STD_LOGIC;
+        --
+        wr_en : IN STD_LOGIC;
+        index : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
+        data_in : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
 
+        data_out : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
+        --
+        sim : OUT refi_sim_data_type
+    );
+END register_file;
 
-entity register_file is
-	generic(	sim_en:	boolean := false
-				);
-	port(	clk:			in  std_logic;
-			--
-			wr_en:		in  std_logic;
-			index:		in  std_logic_vector(1 downto 0);
-			data_in:		in  std_logic_vector(7 downto 0);
-			
-			data_out:	out  std_logic_vector(7 downto 0);
-			--
-			sim:			out  refi_sim_data_type
-			);
-end register_file;
+ARCHITECTURE behavioral OF register_file IS
 
+    TYPE mem_array IS ARRAY (3 DOWNTO 0) OF STD_LOGIC_VECTOR(7 DOWNTO 0);
+    SIGNAL reg_array : mem_array;
 
+    SIGNAL sim_sig : refi_sim_data_type;
 
-architecture behavioral of register_file is
-	
-	type mem_array is array (3 downto 0) of std_logic_vector(7 downto 0);
-	signal reg_array: mem_array;
-	
-	signal sim_sig:	refi_sim_data_type;
+BEGIN
 
-begin
+    data_out <= reg_array(to_integer(unsigned(index)));
+    PROCESS (clk)
+    BEGIN
+        IF (rising_edge(clk)) THEN
 
-	data_out <= reg_array(to_integer(unsigned(index)));
-	
+            IF (wr_en = '1') THEN
+                reg_array(to_integer(unsigned(index))) <= data_in;
+            END IF;
 
-	process(clk)
-	begin
-		if(rising_edge(clk)) then
-			
-			if (wr_en = '1') then
-				reg_array(to_integer(unsigned(index))) <= data_in;
-			end if;
-			
-		end if;
-	end process;
-	
-	
-	sim_sig.wr_en <=	wr_en;
-	sim_sig.index <=	index;
-	
-	sim_sig.r0_reg <=	reg_array(0);
-	sim_sig.r1_reg <=	reg_array(1);
-	sim_sig.r2_reg <=	reg_array(2);
-	sim_sig.r3_reg <=	reg_array(3);
-	
-	sim_switch:
-	if(sim_en = true) generate
-		sim <= sim_sig;
-	end generate sim_switch;
-	
-end behavioral;
+        END IF;
+    END PROCESS;
+    sim_sig.wr_en <= wr_en;
+    sim_sig.index <= index;
+
+    sim_sig.r0_reg <= reg_array(0);
+    sim_sig.r1_reg <= reg_array(1);
+    sim_sig.r2_reg <= reg_array(2);
+    sim_sig.r3_reg <= reg_array(3);
+
+    sim_switch :
+    IF (sim_en = true) GENERATE
+        sim <= sim_sig;
+    END GENERATE sim_switch;
+
+END behavioral;
