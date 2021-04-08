@@ -1,6 +1,8 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 
+LIBRARY tine_alpha;
+
 PACKAGE alu_const IS
 
     CONSTANT AO_SKNV : STD_LOGIC_VECTOR(3 DOWNTO 0) := "0000";

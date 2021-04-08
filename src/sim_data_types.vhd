@@ -1,6 +1,8 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 
+LIBRARY tine_alpha;
+
 PACKAGE sim_data_types IS
 
     TYPE adst_sim_data_type IS RECORD
